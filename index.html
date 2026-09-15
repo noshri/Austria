@@ -1,0 +1,495 @@
+<meta charset="UTF-8">
+<style>
+  :root{ color-scheme: light; --navy:#1F3B57; --gold:#B8863B; --grey:#5b5b5b; --lightbg:#F5F1E8; --menubg:#EAF3EE; --rain:#1B6FA8; --exc:#9C5B1E; --line:#e3ddd0; --card:#ffffff; }
+  *{box-sizing:border-box;}
+  body{ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:#222; background:#fbfaf6; margin:0; padding:0; }
+  .wrap{ max-width:1080px; margin:0 auto; padding:24px 20px 80px; }
+  h1{ text-align:center; color:var(--navy); font-size:2.1em; margin:6px 0 2px; }
+  .subtitle{ text-align:center; color:var(--gold); font-style:italic; font-size:1.15em; margin:0 0 6px;}
+  .datesub{ text-align:center; color:var(--grey); margin:0 0 4px;}
+  .route{ text-align:center; color:var(--grey); font-size:0.92em; margin:0 0 18px;}
+  nav.daynav{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin:14px 0 24px; position:sticky; top:0; background:#fbfaf6ee; backdrop-filter:blur(4px); padding:10px 0; z-index:50; border-bottom:1px solid var(--line);}
+  nav.daynav a{ font-size:0.8em; padding:5px 10px; border-radius:14px; background:var(--lightbg); color:var(--navy); text-decoration:none; border:1px solid var(--line); font-weight:600;}
+  nav.daynav a:hover{ background:var(--gold); color:#fff; }
+  section.block{ margin:38px 0; }
+  h2.section-title{ color:var(--navy); border-bottom:2px solid var(--navy); padding-bottom:6px; font-size:1.5em; }
+  .daycard-header{ display:flex; flex-wrap:wrap; align-items:baseline; gap:10px; background:var(--lightbg); padding:10px 16px; border-radius:8px; margin:26px 0 10px;}
+  .daycard-header.flex{ background:var(--menubg); }
+  .daynum{ color:var(--gold); font-weight:800; font-size:0.95em; letter-spacing:0.3px;}
+  .daytitle{ color:var(--navy); font-weight:800; font-size:1.25em; }
+  .tag{ margin-left:auto; font-size:0.72em; font-weight:800; letter-spacing:0.5px; padding:3px 9px; border-radius:12px; }
+  .tag.fixed{ background:#f0d9c2; color:#8a4b12; }
+  .tag.flex{ background:#cfe6d9; color:#1f5c3d; }
+  .daybody p.intro{ color:#333; line-height:1.5; margin:6px 0 14px;}
+  .grouptitle{ font-weight:700; color:var(--navy); margin:18px 0 10px; font-size:1.05em; border-left:4px solid var(--gold); padding-left:8px;}
+  .cards{ display:grid; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); gap:16px; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; transition:box-shadow .15s; }
+  .card:hover{ box-shadow:0 4px 14px rgba(0,0,0,0.08); }
+  .card .body{ padding:12px 14px 14px; display:flex; flex-direction:column; gap:6px; flex:1; }
+  .card .name{ font-weight:800; color:var(--navy); font-size:1.02em; text-decoration:none; }
+  .card .name:hover{ text-decoration:underline; }
+  .card .meta{ font-size:0.78em; color:var(--grey); font-style:italic; }
+  .badges{ display:flex; flex-wrap:wrap; gap:5px; margin:2px 0; }
+  .badge{ font-size:0.68em; font-weight:800; padding:2px 7px; border-radius:10px; letter-spacing:0.3px; }
+  .badge.rain{ background:#dbeef8; color:var(--rain); }
+  .badge.exc{ background:#f3e3d0; color:var(--exc); }
+  .stroller{ font-size:0.78em; color:#444; background:#f6f4ee; border-radius:6px; padding:5px 8px; }
+  .stroller b{ color:var(--navy); }
+  .desc{ font-size:0.86em; color:#333; line-height:1.42; flex:1; }
+  .note-line{ font-size:0.78em; color:var(--grey); font-style:italic; border-top:1px dashed var(--line); padding-top:6px; margin-top:2px;}
+  .linkrow{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .linkrow a{ font-size:0.74em; font-weight:700; text-decoration:none; padding:5px 9px; border-radius:6px; border:1px solid var(--line); color:var(--navy); background:#fafaf7; }
+  .linkrow a.site{ background:var(--navy); color:#fff; border-color:var(--navy); }
+  .linkrow a.maps{ background:#fff; }
+  .linkrow a.waze{ background:#e8f3ff; }
+  .elev-tag{ display:inline-block; background:#eef1f5; color:var(--navy); font-weight:700; font-size:0.72em; padding:2px 7px; border-radius:6px; }
+  .legend-box{ background:var(--lightbg); border-radius:10px; padding:16px 20px; font-size:0.9em; line-height:1.55; }
+  .legend-box ul{ margin:6px 0 0; padding-left:20px; }
+  table.notes{ width:100%; border-collapse:collapse; font-size:0.88em; }
+  table.notes td{ padding:6px 4px; border-bottom:1px solid var(--line); vertical-align:top; }
+  ul.practical{ line-height:1.6; font-size:0.92em; }
+  .hotel-card{ border:1px solid var(--line); border-radius:10px; padding:14px 18px; margin-bottom:12px; background:#fff; }
+  .hotel-card h3{ margin:0 0 4px; color:var(--navy); }
+  .hotel-card .meta{ color:var(--grey); font-size:0.88em; }
+  .weather-wrap{ overflow-x:auto; }
+  table.weather{ border-collapse:collapse; width:100%; min-width:760px; font-size:0.82em; }
+  table.weather th{ background:var(--navy); color:#fff; padding:6px 8px; text-align:center; }
+  table.weather td{ padding:6px 8px; text-align:center; border-bottom:1px solid var(--line); }
+  table.weather td.place{ text-align:left; font-weight:700; color:var(--navy); }
+  .wx-icon{ font-size:1.3em; }
+  .footer-note{ text-align:center; color:var(--grey); font-size:0.8em; margin-top:50px; }
+  .filterbar{ display:flex; gap:8px; justify-content:center; margin-bottom:18px; flex-wrap:wrap; }
+  .filterbar button{ font-size:0.8em; font-weight:700; padding:6px 14px; border-radius:16px; border:1px solid var(--line); background:#fff; cursor:pointer; color:var(--navy); }
+  .filterbar button.active{ background:var(--navy); color:#fff; }
+  .card.hide{ display:none; }
+  .missing{ background:#fff7e8; border:1px solid #eacd8a; border-radius:8px; padding:12px 16px; font-size:0.88em; color:#6b4d10; }
+</style>
+
+<div class="wrap">
+  <h1>Tyrol, Austria</h1>
+  <div class="subtitle">A Family Road Trip</div>
+  <div class="datesub">September 19 &#8211; 29, 2026</div>
+  <div class="route">Tel Aviv &#8594; Munich &#8594; F&#252;gen (Zillertal) &#8594; Innsbruck &#8594; Munich Airport &#8594; Tel Aviv</div>
+
+  <nav class="daynav" id="daynav"></nav>
+
+  <section class="block">
+    <h2 class="section-title">Flight Details</h2>
+    <div class="legend-box">
+      <b>Outbound:</b> Tel Aviv &#8594; Munich, LH683, Sep 19 2026 &#8212; departs Tel Aviv 01:45, arrives Munich 06:20 (5h35m total, including a ~50 min technical stop in Larnaca, Cyprus for a Lufthansa crew change).<br>
+      <b>Return:</b> Munich &#8594; Tel Aviv, LH680, Sep 29 2026 &#8212; departs 11:10, arrives 16:00.
+    </div>
+  </section>
+
+  <section class="block">
+    <h2 class="section-title">Live Weather Snapshot</h2>
+    <div class="weather-wrap"><table class="weather" id="weatherTable"></table></div>
+    <p class="footer-note" style="margin-top:10px;">Source: <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a> (aggregates national forecast models incl. DWD/ZAMG). Snapshot taken Sep 14, 2026 &#8212; forecasts this far out shift day to day, so treat this as a general read, not the final word; re-check closer to departure.</p>
+  </section>
+
+  <section class="block">
+    <h2 class="section-title">How This Works</h2>
+    <div class="legend-box">
+      Every day below lists more than one option rather than one fixed plan &#8212; pick whichever fits the weather, energy, and mood once you're there. Only <b>Sunday Sep 20</b> (Wildpark Aurach) and <b>Saturday Sep 26 morning</b> (Almabtrieb) are genuinely fixed.
+      <ul>
+        <li><span class="badge rain">&#9748; RAINY-DAY PICK</span> &#8212; holds up well if it's wet (indoor, or minimal walking to a covered/drive-up view).</li>
+        <li><span class="badge exc">ALTITUDE-EXCEPTION</span> &#8212; above the 1,500m default ceiling. Plan for one, maybe two, of these across the whole stay &#8212; not all of them.</li>
+        <li>Every card lists a <b>stroller/carrier</b> note, the <b>elevation</b>, a link to the <b>official website</b> (where one exists), and buttons for <b>Google Maps</b> and <b>Waze</b>.</li>
+        <li>Cards with a photo show the real place; cards with a plain icon are places without a usable free photo &#8212; the description still tells you what to expect.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2 class="section-title">Hotels</h2>
+    <div id="hotels"></div>
+  </section>
+
+  <div id="days"></div>
+
+  <section class="block">
+    <h2 class="section-title">Where to Eat &#8212; By Location</h2>
+    <div id="eatSections"></div>
+  </section>
+
+  <section class="block">
+    <h2 class="section-title">Practical Notes</h2>
+    <ul class="practical" id="practicalList"></ul>
+  </section>
+
+  <section class="block missing" id="missingInfo"></section>
+
+  <div class="footer-note">Built for Noa's family trip &#183; click any place name to open its site &#183; Maps/Waze buttons open turn-by-turn directions</div>
+</div>
+
+<script>
+const PLACE_IMAGES = {};
+</script>
+<script>
+const WEATHER = {
+  fugen: { daily: {
+    time: ["2026-09-19","2026-09-20","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-27","2026-09-28","2026-09-29"],
+    temperature_2m_max: [18.3,20,17.8,18.6,20.1,17.8,22.5,22.8,23,26.8,14.2],
+    temperature_2m_min: [10.3,9.9,13.4,11.9,7.7,6.3,6,9,8.9,10.7,2.1],
+    precipitation_probability_max: [13,10,42,35,29,27,29,29,37,29,null],
+    weathercode: [3,3,80,51,3,3,3,53,51,55,55]
+  }},
+  innsbruck: { daily: {
+    time: ["2026-09-19","2026-09-20","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-27","2026-09-28","2026-09-29"],
+    temperature_2m_max: [20.1,21.5,20.6,20.5,22.9,21.7,23.2,23.6,23,26.9,16.7],
+    temperature_2m_min: [10.9,10.9,13.5,13.4,8.7,7.9,7.4,10.5,10.6,11,3.1],
+    precipitation_probability_max: [6,8,28,32,20,20,23,25,29,27,null],
+    weathercode: [2,3,61,51,3,3,1,53,51,53,55]
+  }},
+  munich: { daily: {
+    time: ["2026-09-19","2026-09-20","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-27","2026-09-28","2026-09-29"],
+    temperature_2m_max: [19.5,20.5,16.3,17.3,17.5,16,17.9,19.4,18.6,23.7,12.9],
+    temperature_2m_min: [8.7,8.7,12.8,11.7,7.4,7.9,6.2,9.9,7.8,14.3,3.6],
+    precipitation_probability_max: [8,13,9,24,15,20,22,22,25,24,null],
+    weathercode: [2,3,61,51,3,2,0,53,3,55,55]
+  }}
+};
+
+const HOTELS = [
+  { name:"Hotel Waldfriede", website:"https://www.waldfriede.at/", address:"Waldfriedenweg 4, 6264 F\u00fcgenberg, Austria", dates:"Sep 19 \u2013 27 (8 nights)", breakfast:"Breakfast included every day" },
+  { name:"AC Hotel by Marriott Innsbruck", website:"https://www.marriott.com/en-us/hotels/innac-ac-hotel-innsbruck/overview/", address:"AC Hotel by Marriott Innsbruck, Austria", dates:"Sep 27 \u2013 28 (1 night)", breakfast:"No breakfast \u2014 see Day 11 for nearby bakeries/caf\u00e9s" },
+  { name:"Hampton by Hilton Munich Airport South", website:"https://www.booking.com/hotel/de/hampton-inn-hallbergmoos-by.en-gb.html", address:"Hampton by Hilton Munich Airport South, Hallbergmoos, Germany", dates:"Sep 28 \u2013 29 (1 night)", breakfast:"Breakfast included" },
+];
+
+const DAYS = [
+{
+  id:"day1", navLabel:"Day 1", daynum:"DAY 1 \u00b7 Sat, Sep 19", title:"Arrival \u2014 Munich to F\u00fcgen", tag:"fixed",
+  intro:"Land at Munich Airport at 06:20, collect the rental car (Sixt, pickup 07:30), and drive directly to F\u00fcgenberg \u2014 about 110 km, roughly 1.5\u20131.75 hrs. No stops on this drive on purpose: with a 06:20 landing and no real sleep on the flight, the simplest plan is the best one. Early check-in has been requested but isn't guaranteed.",
+  groups:[{ title:"Options for the rest of the day", places:[
+    { name:"If your room is ready", meta:"most likely, arriving ~9:15\u20139:45am", icon:"hotel", iconBg:"#eef1f5", stroller:"N/A",
+      desc:"Check in, and just rest. No activity is planned today on purpose \u2014 you'll have landed with a 5-month-old and no real sleep. A nap for everyone is the best possible use of today.",
+      website:"https://www.waldfriede.at/", address:"Hotel Waldfriede, Waldfriedenweg 4, 6264 F\u00fcgenberg, Austria" },
+    { name:"Dorfb\u00e4ck B\u00e4ckerei-Caf\u00e9", meta:"opens 6:30am \u00b7 ~5 min from the hotel", icon:"cafe", iconBg:"#f6e9d8", rain:true,
+      stroller:"Fully accessible, flat village street.",
+      desc:"If early check-in isn't ready yet, this is the fallback: fresh pastries and coffee while the hotel holds your luggage.",
+      website:"https://www.ruetz.at/baeckereien/standorte/fuegen_tirol", address:"B\u00e4ckerei Dorfb\u00e4ck, Hochf\u00fcgener Str. 7, 6263 F\u00fcgen, Austria" },
+    { name:"Short stroll around F\u00fcgenberg/F\u00fcgen", meta:"0 km, right from the hotel", icon:"village", iconBg:"#e6efe3",
+      stroller:"Fully accessible, flat.",
+      desc:"Only if someone genuinely wants fresh air \u2014 a flat, aimless walk around the village, no set distance or destination.",
+      website:null, address:"F\u00fcgenberg, Austria" },
+  ]}]
+},
+{
+  id:"day2", navLabel:"Day 2", daynum:"DAY 2 \u00b7 Sun, Sep 20", title:"Wildpark Aurach & Kitzb\u00fchel", tag:"fixed",
+  intro:"This is the one day genuinely tied to the calendar \u2014 the park's hours make Sunday the day for it.",
+  groups:[
+    { title:"Primary plan", places:[
+      { name:"Wildpark Aurach", meta:"~55 min drive from F\u00fcgen \u00b7 open Sun 10:00\u201317:00", elev:"1,100m", icon:"wildlife", img:"wildpark",
+        stroller:"Fully accessible \u2014 flat paths throughout.",
+        desc:"A 40-hectare open-air wildlife park (largest in Tyrol) \u2014 ibex, lynx, marmots, red deer, wildcats, and eagle-owls roaming largely without fences, plus a petting barn.",
+        note:"No shade anywhere in the park \u2014 bring hats, sunscreen, and a stroller sunshade. The main animal feeding (~2:30pm) does not happen during rutting season (mid-Sep\u2013mid-Nov); the petting-barn feeding for kids (Sat/Sun/holidays, 1:30pm) should still run.",
+        website:"https://www.wildpark-tirol.at/en/wildpark-aurach.html", address:"Wildpark Aurach, Aurach bei Kitzb\u00fchel, Austria" },
+    ]},
+    { title:"Easy add-on nearby", places:[
+      { name:"Kitzb\u00fchel old town", meta:"4 km from Wildpark Aurach", elev:"~760m", icon:"village", img:"kitzbuhel",
+        stroller:"Cobblestone streets \u2014 manageable but bumpier than the park.",
+        desc:"A genuinely pretty, photogenic Tyrolean town \u2014 worth an hour of wandering before heading back.",
+        website:"https://www.kitzbuehel.com/en/", address:"Kitzb\u00fchel, Austria" },
+    ]},
+    { title:"If the weather turns", places:[
+      { name:"Erlebnissennerei Zillertal", meta:"~30 min from F\u00fcgen", elev:"~630m", icon:"dairy", iconBg:"#f6efd8", rain:true,
+        stroller:"Fully accessible, indoor.",
+        desc:"A hay-milk showcase dairy \u2014 watch cheese and yogurt being made, then taste at 8 tasting stations, plus a small petting farm. Genuinely good if Sunday turns out wet.",
+        website:"https://www.erlebnissennerei-zillertal.at/", address:"Erlebnissennerei Zillertal, Hollenzen, Mayrhofen, Austria" },
+    ]},
+  ]
+},
+{
+  id:"day3to8", navLabel:"Days 3\u20138", daynum:"DAYS 3\u20138 \u00b7 Mon Sep 21 \u2013 Sat Sep 26 (morning)", title:"Zillertal base \u2014 open days", tag:"flex",
+  intro:"Six days at Waldfriede with no fixed plan except Saturday morning's Almabtrieb (next section). More options are listed than you have days for \u2014 deliberately \u2014 so you can pick based on weather, how the baby's doing, and what sounds good that morning, in any order.",
+  groups:[
+    { title:"Zillertal / Mayrhofen-area options (closest to the hotel)", places:[
+      { name:"Stillup Reservoir", meta:"Mayrhofen ~20 min, then an 8km toll road (~\u20ac8/car), ~20\u201330 min more", elev:"1,116m", icon:"lake", iconBg:"#dcedf5",
+        stroller:"Drive right up \u2014 minimal walking needed for the view.",
+        desc:"A turquoise reservoir fed by waterfalls, reached by driving right up (open seasonally, roughly May\u2013October).",
+        website:"https://www.mayrhofen.at/en/stories/stilluptal-valley", address:"Stillup Stausee, Mayrhofen, Austria" },
+      { name:"Rosenalmbahn \u2192 Wiesenalm", meta:"cable car leaves from Zell am Ziller, ~15 min from F\u00fcgen", elev:"1,309m", icon:"cablecar", iconBg:"#e3ecd8",
+        stroller:"Cable car cabin accessible; the meadow at top is flat, natural terrain.",
+        desc:"Ride to the Wiesenalm mid-station \u2014 real alpine meadow, a restaurant terrace, a playground, and decent odds of spotting marmots.",
+        website:"https://www.wiesenalm.at/en/", address:"Rosenalmbahn, Zell am Ziller, Austria" },
+      { name:"Schlegeis Stausee", meta:"via Mayrhofen/Ginzling + 13.3km toll road (~\u20ac17/car), ~1\u20131.25 hrs from F\u00fcgen", elev:"~1,782m", icon:"lake", img:"schlegeis", exception:true,
+        stroller:"Flat, accessible walk across the dam top; the toll road itself is winding with tunnels.",
+        desc:"Turquoise water, glaciers, 3,000m peaks, a flat walk across the dam top. One of the trip's altitude-exception candidates.",
+        website:"https://www.schlegeis-speicher.com/en/the-schlegeis-reservoir/", address:"Schlegeis Stausee, Ginzling, Austria" },
+      { name:"Mt. Penken panoramic path", meta:"Penkenbahn cable car direct from Mayrhofen, ~25 min from F\u00fcgen", elev:"~1,790m", icon:"mountain", img:"penken", exception:true,
+        stroller:"Cable car cabin accessible; carrier works better for the full loop at the top.",
+        desc:"A panoramic circular trail at the top \u2014 walk as much or as little as you like. Another altitude-exception candidate.",
+        website:"https://www.mayrhofner-bergbahnen.com/en/", address:"Penkenbahn, Mayrhofen, Austria" },
+      { name:"Spieljochbahn", meta:"cable car starts right in F\u00fcgen, a few minutes from the hotel", elev:"~1,858\u20132,100m", icon:"cablecar", iconBg:"#e3ecd8", exception:true,
+        stroller:"Cable car cabin accessible; carrier recommended at the mountain top.",
+        desc:"The closest big-mountain option to your hotel \u2014 a modern 10-seater cable car straight up from the village. Convenient if you want the \"exception\" day without a long drive first.",
+        website:"https://www.spieljochbahn.at/en/summer/", address:"Spieljochbahn, F\u00fcgen, Austria" },
+      { name:"Krimml Waterfalls", meta:"via the Gerlos Alpine Road (toll, ~\u20ac12/car), ~1\u20131.25 hrs from F\u00fcgen", elev:"~1,080m", icon:"waterfall", img:"krimml",
+        stroller:"Lower viewpoint is flat and stroller-accessible; higher sections are steps/gravel.",
+        desc:"Austria's highest waterfall, with a flat, stroller-accessible lower viewpoint about 10 minutes from the entrance.",
+        website:"https://www.wasserfaelle-krimml.at/en/", address:"Krimmler Wasserf\u00e4lle, Krimml, Austria" },
+      { name:"Astberg bench + Hintersteiner See", meta:"Wilder Kaiser region (Going/Scheffau), ~50\u201360 min from F\u00fcgen", elev:"~1,255m / 883m", icon:"lake", img:"wilderkaiser",
+        stroller:"Chairlift isn't stroller-friendly (carrier at the top); Hintersteiner See's lakeside path is flat and stroller-accessible.",
+        desc:"Two low-elevation spots close together: the Astberg bench, a popular resting spot via chairlift (small pony farm at top), and Hintersteiner See, a beautiful lake in the Wilder Kaiser reserve.",
+        website:"https://www.wilderkaiser.info/en/going/info/chair-lift-going-astbergbahn-going.html", address:"Astbergbahn, Going am Wilden Kaiser, Austria" },
+      { name:"Erlebnissennerei Zillertal", meta:"~30 min from F\u00fcgen", elev:"~630m", icon:"dairy", iconBg:"#f6efd8", rain:true,
+        stroller:"Fully accessible, indoor.",
+        desc:"The hay-milk showcase dairy again \u2014 genuinely one of your best all-weather options, not just a Sunday backup.",
+        website:"https://www.erlebnissennerei-zillertal.at/", address:"Erlebnissennerei Zillertal, Hollenzen, Mayrhofen, Austria" },
+    ]},
+    { title:"Achensee-area options (~30\u201360 min from F\u00fcgen)", places:[
+      { name:"Gro\u00dfer Ahornboden", meta:"via Achenkirch/Vorderriss + 15km toll road (~\u20ac5/car), ~50\u201360 min from F\u00fcgen", elev:"~1,200m", icon:"mountain", img:"ahornboden",
+        stroller:"Drive right up to the meadow's edge \u2014 flat ground.",
+        desc:"Ancient maple valley in the Karwendel nature reserve \u2014 over 2,000 trees, some 600 years old, against sheer rock walls; chamois and deer are genuinely possible.",
+        website:"https://www.achensee.com/en/", address:"Gro\u00dfer Ahornboden, Eng, Austria" },
+      { name:"Achensee lake promenade + Klausenhof farm shop", meta:"Pertisau, ~30\u201335 min from F\u00fcgen", elev:"~930m", icon:"lake", img:"achensee",
+        stroller:"Fully accessible, flat lakeside path.",
+        desc:"A flat lakeside walk in Pertisau, fully flexible distance. Klausenhof farm shop nearby sells homemade yogurt, bio eggs, and fresh pasta.",
+        website:"https://www.achensee.com/en/", address:"Strandbad Pertisau, Achensee, Austria" },
+      { name:"Kundler Klamm gorge", meta:"~35\u201340 min from F\u00fcgen", elev:"~550\u2013650m", icon:"gorge", iconBg:"#e0e8dc",
+        stroller:"Entrance manageable with a sturdy stroller; further in has uneven/wet sections \u2014 carrier past the first stretch.",
+        desc:"A dramatic gorge with tall rock walls. Walk in as far as you like \u2014 no obligation to cover the full 3.5km marked trail.",
+        website:"https://www.wildschoenau.com/en/activities/hiking/kundl-gorge", address:"Kundler Klamm, Wildsch\u00f6nau, Austria" },
+      { name:"Rofan cable car (Maurach)", meta:"~35\u201340 min from F\u00fcgen", elev:"1,840m", icon:"cablecar", img:"rofan", exception:true,
+        stroller:"Cable car cabin accessible; carrier recommended at the top.",
+        desc:"Barrier-free cable car to the Erfurter H\u00fctte, with a panorama over the lake and the Rofan peaks. A fourth (optional) altitude-exception candidate.",
+        website:"https://www.rofanseilbahn.at/en/summer/", address:"Rofanseilbahn, Maurach am Achensee, Austria" },
+    ]},
+    { title:"Alpbachtal / Rattenberg day trip (~35\u201340 min from F\u00fcgen)", intro:"One combined outing rather than separate items \u2014 Rattenberg's old town, a quick Floberry stop for jam and fruit, and lunch at Don Camillo.", places:[
+      { name:"Rattenberg old town", meta:"~514m elevation", icon:"village", img:"rattenberg",
+        stroller:"Cobblestone old town, manageable but bumpy.",
+        desc:"Austria's smallest town \u2014 a tiny walled medieval old town with glassblowing shops and a genuinely charming, compact center.",
+        website:"https://www.tirol.at/", address:"Rattenberg, Austria" },
+      { name:"Floberry Hofladen & Obstgarten", meta:"open Mon\u2013Sat 9:00\u201318:00", icon:"farm", iconBg:"#efe3ea",
+        stroller:"Small farm shop, flat access.",
+        desc:"Just a quick stop for homemade jams and fresh fruit \u2014 not a destination in itself, easy to fold into the Rattenberg trip.",
+        website:"https://www.floberry.at/", address:"Floberry, St. Gertraudi 34a, 6235 Reith im Alpbachtal, Austria" },
+      { name:"Pizzeria Don Camillo (Alpbachtal)", meta:"lunch stop", icon:"pizza", iconBg:"#f7e3d8",
+        stroller:"N/A \u2014 restaurant seating.",
+        desc:"Good lunch stop right by Floberry \u2014 pizza and pasta, well-reviewed locally.",
+        website:"https://www.tripadvisor.com/Restaurant_Review-g939827-d8656181-Reviews-Pizzeria_Don_Camillo-Reith_im_Alpbachtal_Tirol_Austrian_Alps.html", address:"Pizzeria Don Camillo, Dorf 28, Reith im Alpbachtal, Austria" },
+    ]},
+  ]
+},
+{
+  id:"day9", navLabel:"Day 9", daynum:"DAY 9 \u00b7 Sat, Sep 26", title:"Almabtrieb Festival", tag:"fixed",
+  intro:"", groups:[{ places:[
+    { name:"Almabtrieb \u2014 Alpine cattle-drive festival", meta:"Zell am Ziller, ~10\u201315 min from F\u00fcgen", elev:"~575m", icon:"festival", img:"almabtrieb",
+      stroller:"Crowded festival streets with cobblestones \u2014 a carrier may be easier than a stroller for parts of the morning.",
+      desc:"The valley's biggest folk event: decorated cattle are driven down from the high alpine pastures into town, with traditional costume, music, and market stalls \u2014 confirmed for Sep 26, 2026 in Zell am Ziller.",
+      note:"Parking: use P5 at the Karspitzbahn (Zillertal Arena) \u2014 there's a free shuttle from there into the town center, much easier than trying to park in Zell am Ziller itself. Photo shown is a representative Almabtrieb scene from Schwarzenberg, Austria (no free-license photo of the Zell am Ziller event itself was found) \u2014 afternoon is open for anything left on the Zillertal menu.",
+      website:"https://www.zillertal.at/en/", address:"Zell am Ziller, Austria" },
+  ]}]
+},
+{
+  id:"day10", navLabel:"Day 10", daynum:"DAY 10 \u00b7 Sun, Sep 27", title:"F\u00fcgen to Innsbruck", tag:"fixed",
+  intro:"Check out of Waldfriede and drive to Innsbruck \u2014 about 45\u201360 minutes.",
+  groups:[{ title:"Optional stop on the way", places:[
+    { name:"Rattenberg (optional detour)", meta:"adds ~15\u201320 min if you haven't done the Alpbachtal trip yet", icon:"village", img:"rattenberg",
+      stroller:"Cobblestone old town.",
+      desc:"If the Alpbachtal/Rattenberg outing didn't happen earlier in the week, today's drive can route through it instead of straight to Innsbruck.",
+      website:"https://www.tirol.at/", address:"Rattenberg, Austria" },
+  ]}]
+},
+{
+  id:"day11", navLabel:"Day 11", daynum:"DAY 11 \u00b7 Mon, Sep 28", title:"Innsbruck Shopping, then to Munich via Mittenwald", tag:"fixed",
+  intro:"A full day: shopping/urban time in Innsbruck in the morning, then the drive to Munich in the afternoon with stops at Mittenwald and Buckelwiesen. The car stays parked at the hotel until you leave for Munich \u2014 worth deciding roughly what time to be back on the road, since the drive plus stops is a bit over 2 hours before Mittenwald itself.",
+  groups:[
+    { title:"Breakfast \u2014 no breakfast at the hotel", places:[
+      { name:"Caf\u00e9-Konditorei Munding", meta:"Kiebachgasse 16, Old Town", icon:"cafe", iconBg:"#f6e9d8",
+        stroller:"Old Town cobblestones nearby, caf\u00e9 itself is small.",
+        desc:"One of the oldest patisseries in Tyrol \u2014 self-roasted coffee, 42 hot-chocolate variations.",
+        website:null, address:"Caf\u00e9-Konditorei Munding, Kiebachgasse 16, Innsbruck, Austria" },
+      { name:"Caf\u00e9 Katzung", meta:"Old Town, since 1923", icon:"cafe", iconBg:"#f6e9d8",
+        stroller:"Old Town cobblestones nearby.",
+        desc:"A classic Austrian coffeehouse \u2014 breakfast served all day, homemade cakes and strudels.",
+        website:null, address:"Caf\u00e9 Katzung, Innsbruck, Austria" },
+      { name:"Strudel-Caf\u00e9 Kr\u00f6ll", meta:"near the Golden Roof, Old Town", icon:"cafe", iconBg:"#f6e9d8",
+        stroller:"Old Town cobblestones nearby.",
+        desc:"Historic vaulted caf\u00e9 near the Golden Roof, known for its strudel.",
+        website:null, address:"Strudel-Caf\u00e9 Kr\u00f6ll, Innsbruck, Austria" },
+    ]},
+    { title:"Shopping & urban options", intro:"No nature planned today except the optional Hofgarten below.", places:[
+      { name:"Primark (Sillpark)", meta:"Mon\u2013Fri 9\u20137, Sat 9\u20136", icon:"shopping", iconBg:"#e6e6f0",
+        stroller:"Fully accessible mall.",
+        desc:"Innsbruck's Primark, inside the Sillpark shopping center \u2014 fairly central, an easy first stop.",
+        website:"https://www.sillpark.at/en/shops/primark/", address:"Sillpark, Museumstra\u00dfe 38, Innsbruck, Austria" },
+      { name:"Kaufhaus Tyrol", meta:"Maria-Theresien-Stra\u00dfe 31, Old Town", icon:"shopping", img:"goldendachl",
+        stroller:"Fully accessible, modern department store.",
+        desc:"Innsbruck's largest department store, 55 shops, right on the main Old Town shopping street.",
+        website:"https://kaufhaus-tyrol.at/en/", address:"Kaufhaus Tyrol, Maria-Theresien-Stra\u00dfe 31, Innsbruck, Austria" },
+      { name:"DEZ Einkaufszentrum", meta:"~15\u201320 min further out (east Innsbruck, near IKEA)", icon:"shopping", iconBg:"#e6e6f0",
+        stroller:"Fully accessible mall.",
+        desc:"A much bigger mall (140+ shops) if you want more variety and don't mind the extra drive.",
+        website:"https://www.dez.at/en/", address:"DEZ Einkaufszentrum, Amraser-See-Stra\u00dfe 56a, Innsbruck, Austria" },
+      { name:"Innsbrucker Hofgarten", meta:"free entry", elev:"~575m", icon:"park", img:"hofgarten",
+        stroller:"Fully accessible, flat paths.",
+        desc:"Optional nature add-on \u2014 a 10-hectare park right in the Old Town, no need to leave the city or the car behind.",
+        website:"https://www.innsbruck.info/en/", address:"Hofgarten, Innsbruck, Austria" },
+    ]},
+    { title:"Drive to Munich area, with stops", places:[
+      { name:"Buckelwiesen", meta:"roadside, between Mittenwald and Kr\u00fcn", icon:"park", img:"buckelwiesen",
+        stroller:"No walking required \u2014 a roadside photo stop.",
+        desc:"A quick stop for an unusual landscape of glacial \"hummocky meadows\" with the Karwendel peaks behind them.",
+        website:"https://www.alpenwelt-karwendel.de/en/mittenwald-bavaria", address:"Buckelwiesen, Kr\u00fcn, Germany" },
+      { name:"Mittenwald", meta:"~913m elevation", icon:"village", img:"mittenwald",
+        stroller:"Walkable village center, mostly flat.",
+        desc:"Often called one of the prettiest villages in Germany \u2014 painted house fa\u00e7ades and a centuries-old violin-making tradition. Good lunch stop.",
+        website:"https://www.alpenwelt-karwendel.de/en/tourist-information-mittenwald", address:"Mittenwald, Germany" },
+    ]},
+  ]
+},
+{
+  id:"day12", navLabel:"Day 12", daynum:"DAY 12 \u00b7 Tue, Sep 29", title:"Departure", tag:"fixed",
+  intro:"Drive from Hallbergmoos to Munich Airport \u2014 a short, direct hop (~10\u201315 min). Return the rental car, allow a little extra time if the infant seat needs to be removed/inspected, then head to check-in.",
+  groups:[]
+},
+];
+
+const EAT = [
+  { title:"Near Hotel Waldfriede (F\u00fcgen/F\u00fcgenberg)", places:[
+    { name:"Geolsalm Jausenstation", meta:"~450m / 10 min walk from the hotel", icon:"food", iconBg:"#efe6d8",
+      stroller:"Short walk on a village road.", desc:"European/Austrian dishes, the closest sit-down option to the hotel.",
+      website:null, address:"Geolsalm Jausenstation, F\u00fcgen, Austria" },
+    { name:"Villaggio", meta:"F\u00fcgen village", icon:"pizza", iconBg:"#f7e3d8",
+      stroller:"N/A \u2014 restaurant seating.", desc:"Well-reviewed pizza restaurant, good value.",
+      website:"https://villaggio-fuegen.at/en/", address:"Villaggio, F\u00fcgen, Austria" },
+    { name:"Dorfb\u00e4ck B\u00e4ckerei-Caf\u00e9", meta:"Hochf\u00fcgener Str. 7, F\u00fcgen", icon:"cafe", iconBg:"#f6e9d8", rain:true,
+      stroller:"Fully accessible.", desc:"Bakery-caf\u00e9 for breakfast or a coffee break, also your Day 1 fallback.",
+      website:"https://www.ruetz.at/baeckereien/standorte/fuegen_tirol", address:"B\u00e4ckerei Dorfb\u00e4ck, Hochf\u00fcgener Str. 7, 6263 F\u00fcgen, Austria" },
+  ]},
+  { title:"Near AC Hotel Innsbruck", places:[
+    { name:"Caf\u00e9-Konditorei Munding", meta:"Kiebachgasse 16, Old Town", icon:"cafe", iconBg:"#f6e9d8",
+      stroller:"Old Town cobblestones nearby.", desc:"One of the oldest patisseries in Tyrol.",
+      website:null, address:"Caf\u00e9-Konditorei Munding, Kiebachgasse 16, Innsbruck, Austria" },
+    { name:"Caf\u00e9 Katzung", meta:"Old Town, since 1923", icon:"cafe", iconBg:"#f6e9d8",
+      stroller:"Old Town cobblestones nearby.", desc:"Classic Austrian coffeehouse, breakfast all day.",
+      website:null, address:"Caf\u00e9 Katzung, Innsbruck, Austria" },
+    { name:"Strudel-Caf\u00e9 Kr\u00f6ll", meta:"near the Golden Roof", icon:"cafe", iconBg:"#f6e9d8",
+      stroller:"Old Town cobblestones nearby.", desc:"Historic vaulted caf\u00e9 known for its strudel.",
+      website:null, address:"Strudel-Caf\u00e9 Kr\u00f6ll, Innsbruck, Austria" },
+    { name:"Konrads", meta:"near the hotel", icon:"food", iconBg:"#efe6d8",
+      stroller:"N/A \u2014 restaurant seating.", desc:"Local and international dishes, an easy dinner option close to the hotel.",
+      website:null, address:"Konrads, Innsbruck, Austria" },
+  ]},
+];
+
+const PRACTICAL = [
+  "Austrian highways need a digital or sticker vignette (10-day pass covers this trip, ~\u20ac10\u201311) \u2014 only needed on the Autobahn/Schnellstra\u00dfe network, not the scenic B-roads used throughout this itinerary. The special alpine toll roads (Schlegeis, Gerlos, Stillup, Ahornboden) each charge their own separate per-vehicle fee at a gate.",
+  "Sundays: most shops (including the Spar supermarket in F\u00fcgen) are closed. Stock up on Saturday if you need anything for Sunday.",
+  "Grocery/baby supplies: Spar Supermarkt, Zillerweg 6, F\u00fcgen (Mon\u2013Sat 7:15am\u20136pm). For medication, you'll need an Apotheke (pharmacy) \u2014 supermarkets/drugstores can't sell it.",
+  "Vegetarian throughout means no meat and no fish. Traditional Gasthof menus in the valleys carry vegetarian, fish-free standards (Kaspresskn\u00f6del, K\u00e4sesp\u00e4tzle, Tiroler Gr\u00f6stl without speck on request).",
+  "You're bringing both the stroller and the carrier \u2014 each card above notes which one suits it better.",
+  "8 nights in one hotel means it's worth asking Waldfriede about laundry service partway through the stay.",
+  "An eSIM or local data plan is worth arranging before you land, given how much route/hours-checking this kind of trip involves.",
+  "Almabtrieb parking: P5 at the Karspitzbahn (Zillertal Arena), with a free shuttle into the Zell am Ziller town center.",
+];
+
+const MISSING = `<b>A few things I couldn't fully resolve on my own \u2014 let me know if you want any of these adjusted:</b>
+<ul>
+  <li><b>Photos for small local businesses:</b> Geolsalm Jausenstation, Villaggio, Floberry, Don Camillo, the three Innsbruck caf\u00e9s, Konrads, and both shopping malls don't have a usable free-license photo, so they show a category icon instead of a real photo. If you have your own photo for any of these (or a preferred one), send it and I'll swap it in.</li>
+  <li><b>Almabtrieb photo:</b> I couldn't find a free-license photo of the actual Zell am Ziller event, so the card shows a representative Almabtrieb scene from Schwarzenberg, Austria (same tradition, different village). Happy to replace it if you find/prefer a specific one.</li>
+  <li><b>Weather:</b> the table is a live snapshot pulled today (Sep 14) from Open-Meteo \u2014 since the trip is 5\u201315 days out, these numbers will keep shifting day to day. Treat it as a general read, not a final forecast.</li>
+  <li><b>Astberg / Hintersteiner See / Wiesenalm / Stillup / Spieljochbahn:</b> I used general place names for Google Maps/Waze rather than exact street addresses (some of these don't have a conventional street address) \u2014 should route fine, but flag if a specific link doesn't land where you expect.</li>
+</ul>`;
+</script>
+<script>
+function gmaps(q){ return "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q); }
+function waze(q){ return "https://waze.com/ul?q=" + encodeURIComponent(q) + "&navigate=yes"; }
+
+function placeCard(p){
+  const badges = [];
+  if(p.rain) badges.push(`<span class="badge rain">\u2614 RAINY-DAY PICK</span>`);
+  if(p.exception) badges.push(`<span class="badge exc">ALTITUDE-EXCEPTION</span>`);
+  const nameHtml = p.website
+    ? `<a class="name" href="${p.website}" target="_blank">${p.name}</a>`
+    : `<span class="name">${p.name}</span>`;
+  const links = [];
+  if(p.website) links.push(`<a class="site" href="${p.website}" target="_blank">\ud83c\udf10 Website</a>`);
+  if(p.address){
+    links.push(`<a class="maps" href="${gmaps(p.address)}" target="_blank">\ud83d\udccd Google Maps</a>`);
+    links.push(`<a class="waze" href="${waze(p.address)}" target="_blank">\ud83d\ude97 Waze</a>`);
+  }
+  return `<div class="card" data-rain="${!!p.rain}" data-exc="${!!p.exception}">
+    <div class="body">
+      ${nameHtml}
+      <div class="meta">${p.meta||""}${p.elev? ` \u00b7 <span class="elev-tag">${p.elev}</span>`:""}</div>
+      <div class="badges">${badges.join("")}</div>
+      ${p.stroller? `<div class="stroller"><b>Stroller/Carrier:</b> ${p.stroller}</div>`:""}
+      <div class="desc">${p.desc||""}</div>
+      ${p.note? `<div class="note-line">${p.note}</div>`:""}
+      <div class="linkrow">${links.join("")}</div>
+    </div>
+  </div>`;
+}
+
+function renderGroup(g){
+  return `${g.title? `<div class="grouptitle">${g.title}</div>`:""}
+    ${g.intro? `<p class="intro">${g.intro}</p>`:""}
+    <div class="cards">${g.places.map(placeCard).join("")}</div>`;
+}
+
+function renderDay(d){
+  return `<div id="${d.id}"></div>
+  <div class="daycard-header ${d.tag==='flex'?'flex':''}">
+    <span class="daynum">${d.daynum}</span>
+    <span class="daytitle">${d.title}</span>
+    <span class="tag ${d.tag}">${d.tag==='fixed'?'FIXED':'FLEXIBLE \u2014 PICK ONE'}</span>
+  </div>
+  <div class="daybody">
+    ${d.intro? `<p class="intro">${d.intro}</p>`:""}
+    ${d.groups.map(renderGroup).join("")}
+  </div>`;
+}
+
+function renderAll(){
+  document.getElementById("daynav").innerHTML = DAYS.map(d=>`<a href="#${d.id}">${d.navLabel}</a>`).join("");
+  document.getElementById("days").innerHTML = DAYS.map(renderDay).join("");
+  document.getElementById("hotels").innerHTML = HOTELS.map(h=>`
+    <div class="hotel-card">
+      <h3>${h.website? `<a class="name" href="${h.website}" target="_blank">${h.name}</a>` : h.name}</h3>
+      <div class="meta">${h.dates} \u00b7 ${h.address}</div>
+      <div class="meta">${h.breakfast}</div>
+      <div class="linkrow">
+        ${h.website? `<a class="site" href="${h.website}" target="_blank">\ud83c\udf10 Website</a>`:""}
+        <a class="maps" href="${gmaps(h.address)}" target="_blank">\ud83d\udccd Google Maps</a>
+        <a class="waze" href="${waze(h.address)}" target="_blank">\ud83d\ude97 Waze</a>
+      </div>
+    </div>`).join("");
+  document.getElementById("eatSections").innerHTML = EAT.map(sec=>`
+    <div class="grouptitle">${sec.title}</div>
+    <div class="cards">${sec.places.map(placeCard).join("")}</div>`).join("");
+  document.getElementById("practicalList").innerHTML = PRACTICAL.map(t=>`<li>${t}</li>`).join("");
+  document.getElementById("missingInfo").innerHTML = MISSING;
+  renderWeather();
+}
+
+function wxIcon(code){
+  if(code===0) return "\u2600\ufe0f";
+  if(code===1||code===2) return "\ud83c\udf24\ufe0f";
+  if(code===3) return "\u2601\ufe0f";
+  if(code===45||code===48) return "\ud83c\udf2b\ufe0f";
+  if([51,53,55].includes(code)) return "\ud83c\udf26\ufe0f";
+  if([61,63,65].includes(code)) return "\ud83c\udf27\ufe0f";
+  if([71,73,75].includes(code)) return "\u2744\ufe0f";
+  if([80,81,82].includes(code)) return "\ud83c\udf26\ufe0f";
+  if(code===95) return "\u26c8\ufe0f";
+  return "\ud83c\udf21\ufe0f";
+}
+
+function renderWeather(){
+  const days = WEATHER.fugen.daily.time;
+  let thead = "<tr><th style='text-align:left'>Location</th>" + days.map(d=>`<th>${d.slice(5).replace('-', '/')}</th>`).join("") + "</tr>";
+  function row(label, key){
+    const w = WEATHER[key].daily;
+    return "<tr><td class='place'>"+label+"</td>" + days.map((_,i)=>{
+      const hi = Math.round(w.temperature_2m_max[i]), lo = Math.round(w.temperature_2m_min[i]);
+      const pr = w.precipitation_probability_max[i];
+      return `<td><div class="wx-icon">${wxIcon(w.weathercode[i])}</div>${hi}\u00b0/${lo}\u00b0<br><span style="color:#1B6FA8">${pr!=null?pr+'%':'\u2013'}</span></td>`;
+    }).join("") + "</tr>";
+  }
+  document.getElementById("weatherTable").innerHTML = thead + row("F\u00fcgen (Zillertal)","fugen") + row("Innsbruck","innsbruck") + row("Munich / Hallbergmoos","munich");
+}
+
+renderAll();
+</script>
