@@ -85,7 +85,7 @@
   <section class="block">
     <h2 class="section-title">Live Weather Snapshot</h2>
     <div class="weather-wrap"><table class="weather" id="weatherTable"></table></div>
-    <p class="footer-note" style="margin-top:10px;">Source: <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a> (aggregates national forecast models incl. DWD/ZAMG). Snapshot taken Sep 14, 2026 &#8212; forecasts this far out shift day to day, so treat this as a general read, not the final word; re-check closer to departure.</p>
+    <p class="footer-note" style="margin-top:10px;">Source: <a href="https://open-meteo.com/" target="_blank">Open-Meteo</a> (aggregates national forecast models incl. DWD/ZAMG). <span id="weatherSourceNote">Loading live forecast&#8230;</span> Forecasts this far out shift day to day, so treat this as a general read, not the final word.</p>
   </section>
 
   <section class="block">
@@ -148,7 +148,7 @@ const PLACE_IMAGES = {
 };
 </script>
 <script>
-const WEATHER = {
+let WEATHER = {
   fugen: { daily: {
     time: ["2026-09-19","2026-09-20","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-27","2026-09-28","2026-09-29"],
     temperature_2m_max: [18.3,20,17.8,18.6,20.1,17.8,22.5,22.8,23,26.8,14.2],
@@ -171,6 +171,40 @@ const WEATHER = {
     weathercode: [2,3,61,51,3,2,0,53,3,55,55]
   }}
 };
+
+async function fetchLiveWeather(){
+  const locations = {
+    fugen: {lat:47.35, lon:11.85},
+    innsbruck: {lat:47.2692, lon:11.4041},
+    munich: {lat:48.3539, lon:11.7861}
+  };
+  const tripStart = "2026-09-19", tripEnd = "2026-09-29";
+  try{
+    const results = {};
+    for(const key in locations){
+      const {lat, lon} = locations[key];
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=Europe%2FVienna&forecast_days=16`;
+      const res = await fetch(url);
+      if(!res.ok) throw new Error("fetch failed: " + key);
+      const data = await res.json();
+      const idx = data.daily.time.map((d,i)=>({d,i})).filter(x=>x.d>=tripStart && x.d<=tripEnd).map(x=>x.i);
+      results[key] = { daily: {
+        time: idx.map(i=>data.daily.time[i]),
+        temperature_2m_max: idx.map(i=>data.daily.temperature_2m_max[i]),
+        temperature_2m_min: idx.map(i=>data.daily.temperature_2m_min[i]),
+        precipitation_probability_max: idx.map(i=>data.daily.precipitation_probability_max[i]),
+        weathercode: idx.map(i=>data.daily.weathercode[i]),
+      }};
+    }
+    if(results.fugen.daily.time.length === 0) throw new Error("trip dates outside live forecast window");
+    WEATHER = results;
+    renderWeather();
+    document.getElementById("weatherSourceNote").textContent = "Live forecast, fetched just now from Open-Meteo.";
+  } catch(err){
+    console.warn("Live weather fetch failed, keeping last saved snapshot.", err);
+    document.getElementById("weatherSourceNote").textContent = "Couldn't reach Open-Meteo just now — showing the last saved snapshot (Sep 14, 2026).";
+  }
+}
 
 const HOTELS = [
   { name:"Hotel Waldfriede", website:"https://www.waldfriede.at/", address:"Waldfriedenweg 4, 6264 F\u00fcgenberg, Austria", dates:"Sep 19 \u2013 27 (8 nights)", breakfast:"Breakfast included every day" },
@@ -516,4 +550,5 @@ function renderWeather(){
 }
 
 renderAll();
+fetchLiveWeather();
 </script>
