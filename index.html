@@ -140,6 +140,11 @@ const PLACE_IMAGES = {
      goldendachl: "images/goldendachl.jpg",
      hofgarten: "images/hofgarten.jpg",
      almabtrieb: "images/almabtrieb.jpg"
+     kundler: "images/kundler.jpg",
+     dairy: "images/dairy.jpg",
+     spieljochbahn: "images/spieljochbahn.jpg",
+     stillup: "images/stillup.jpg",
+     wiesenalm: "images/wiesenalm.jpg"
 };
 </script>
 <script>
@@ -209,7 +214,7 @@ const DAYS = [
         website:"https://www.kitzbuehel.com/en/", address:"Kitzb\u00fchel, Austria" },
     ]},
     { title:"If the weather turns", places:[
-      { name:"Erlebnissennerei Zillertal", meta:"~30 min from F\u00fcgen", elev:"~630m", icon:"dairy", iconBg:"#f6efd8", rain:true,
+      { name:"Erlebnissennerei Zillertal", meta:"~30 min from F\u00fcgen", elev:"~630m", icon:"dairy", iconBg:"#f6efd8", rain:true, img:"dairy",
         stroller:"Fully accessible, indoor.",
         desc:"A hay-milk showcase dairy \u2014 watch cheese and yogurt being made, then taste at 8 tasting stations, plus a small petting farm. Genuinely good if Sunday turns out wet.",
         website:"https://www.erlebnissennerei-zillertal.at/", address:"Erlebnissennerei Zillertal, Hollenzen, Mayrhofen, Austria" },
@@ -221,11 +226,11 @@ const DAYS = [
   intro:"Six days at Waldfriede with no fixed plan except Saturday morning's Almabtrieb (next section). More options are listed than you have days for \u2014 deliberately \u2014 so you can pick based on weather, how the baby's doing, and what sounds good that morning, in any order.",
   groups:[
     { title:"Zillertal / Mayrhofen-area options (closest to the hotel)", places:[
-      { name:"Stillup Reservoir", meta:"Mayrhofen ~20 min, then an 8km toll road (~\u20ac8/car), ~20\u201330 min more", elev:"1,116m", icon:"lake", iconBg:"#dcedf5",
+      { name:"Stillup Reservoir", meta:"Mayrhofen ~20 min, then an 8km toll road (~\u20ac8/car), ~20\u201330 min more", elev:"1,116m", icon:"lake", iconBg:"#dcedf5", img:"stillup",
         stroller:"Drive right up \u2014 minimal walking needed for the view.",
         desc:"A turquoise reservoir fed by waterfalls, reached by driving right up (open seasonally, roughly May\u2013October).",
         website:"https://www.mayrhofen.at/en/stories/stilluptal-valley", address:"Stillup Stausee, Mayrhofen, Austria" },
-      { name:"Rosenalmbahn \u2192 Wiesenalm", meta:"cable car leaves from Zell am Ziller, ~15 min from F\u00fcgen", elev:"1,309m", icon:"cablecar", iconBg:"#e3ecd8",
+      { name:"Rosenalmbahn \u2192 Wiesenalm", meta:"cable car leaves from Zell am Ziller, ~15 min from F\u00fcgen", elev:"1,309m", icon:"cablecar", iconBg:"#e3ecd8", img:"wiesenalm",
         stroller:"Cable car cabin accessible; the meadow at top is flat, natural terrain.",
         desc:"Ride to the Wiesenalm mid-station \u2014 real alpine meadow, a restaurant terrace, a playground, and decent odds of spotting marmots.",
         website:"https://www.wiesenalm.at/en/", address:"Rosenalmbahn, Zell am Ziller, Austria" },
@@ -237,7 +242,7 @@ const DAYS = [
         stroller:"Cable car cabin accessible; carrier works better for the full loop at the top.",
         desc:"A panoramic circular trail at the top \u2014 walk as much or as little as you like. Another altitude-exception candidate.",
         website:"https://www.mayrhofner-bergbahnen.com/en/", address:"Penkenbahn, Mayrhofen, Austria" },
-      { name:"Spieljochbahn", meta:"cable car starts right in F\u00fcgen, a few minutes from the hotel", elev:"~1,858\u20132,100m", icon:"cablecar", iconBg:"#e3ecd8", exception:true,
+      { name:"Spieljochbahn", meta:"cable car starts right in F\u00fcgen, a few minutes from the hotel", elev:"~1,858\u20132,100m", icon:"cablecar", iconBg:"#e3ecd8", exception:true, img:"spieljochbahn",
         stroller:"Cable car cabin accessible; carrier recommended at the mountain top.",
         desc:"The closest big-mountain option to your hotel \u2014 a modern 10-seater cable car straight up from the village. Convenient if you want the \"exception\" day without a long drive first.",
         website:"https://www.spieljochbahn.at/en/summer/", address:"Spieljochbahn, F\u00fcgen, Austria" },
@@ -249,7 +254,7 @@ const DAYS = [
         stroller:"Chairlift isn't stroller-friendly (carrier at the top); Hintersteiner See's lakeside path is flat and stroller-accessible.",
         desc:"Two low-elevation spots close together: the Astberg bench, a popular resting spot via chairlift (small pony farm at top), and Hintersteiner See, a beautiful lake in the Wilder Kaiser reserve.",
         website:"https://www.wilderkaiser.info/en/going/info/chair-lift-going-astbergbahn-going.html", address:"Astbergbahn, Going am Wilden Kaiser, Austria" },
-      { name:"Erlebnissennerei Zillertal", meta:"~30 min from F\u00fcgen", elev:"~630m", icon:"dairy", iconBg:"#f6efd8", rain:true,
+      { name:"Erlebnissennerei Zillertal", meta:"~30 min from F\u00fcgen", elev:"~630m", icon:"dairy", iconBg:"#f6efd8", rain:true,img:"dairy",
         stroller:"Fully accessible, indoor.",
         desc:"The hay-milk showcase dairy again \u2014 genuinely one of your best all-weather options, not just a Sunday backup.",
         website:"https://www.erlebnissennerei-zillertal.at/", address:"Erlebnissennerei Zillertal, Hollenzen, Mayrhofen, Austria" },
@@ -263,7 +268,7 @@ const DAYS = [
         stroller:"Fully accessible, flat lakeside path.",
         desc:"A flat lakeside walk in Pertisau, fully flexible distance. Klausenhof farm shop nearby sells homemade yogurt, bio eggs, and fresh pasta.",
         website:"https://www.achensee.com/en/", address:"Strandbad Pertisau, Achensee, Austria" },
-      { name:"Kundler Klamm gorge", meta:"~35\u201340 min from F\u00fcgen", elev:"~550\u2013650m", icon:"gorge", iconBg:"#e0e8dc",
+      { name:"Kundler Klamm gorge", meta:"~35\u201340 min from F\u00fcgen", elev:"~550\u2013650m", icon:"gorge", iconBg:"#e0e8dc",img:"kundler",
         stroller:"Entrance manageable with a sturdy stroller; further in has uneven/wet sections \u2014 carrier past the first stretch.",
         desc:"A dramatic gorge with tall rock walls. Walk in as far as you like \u2014 no obligation to cover the full 3.5km marked trail.",
         website:"https://www.wildschoenau.com/en/activities/hiking/kundl-gorge", address:"Kundler Klamm, Wildsch\u00f6nau, Austria" },
