@@ -29,6 +29,7 @@
   .card .name{ font-weight:800; color:var(--navy); font-size:1.02em; text-decoration:none; }
   .card .name:hover{ text-decoration:underline; }
   .card .meta{ font-size:0.78em; color:var(--grey); font-style:italic; }
+  .card .img{ width:100%; height:150px; object-fit:cover; display:block; background:#eee; }
   .badges{ display:flex; flex-wrap:wrap; gap:5px; margin:2px 0; }
   .badge{ font-size:0.68em; font-weight:800; padding:2px 7px; border-radius:10px; letter-spacing:0.3px; }
   .badge.rain{ background:#dbeef8; color:var(--rain); }
@@ -414,6 +415,7 @@ function gmaps(q){ return "https://www.google.com/maps/search/?api=1&query=" + e
 function waze(q){ return "https://waze.com/ul?q=" + encodeURIComponent(q) + "&navigate=yes"; }
 
 function placeCard(p){
+  const imgHtml = (p.img && PLACE_IMAGES[p.img]) ? `<img class="img" src="${PLACE_IMAGES[p.img]}" alt="${p.name}">` : "";
   const badges = [];
   if(p.rain) badges.push(`<span class="badge rain">\u2614 RAINY-DAY PICK</span>`);
   if(p.exception) badges.push(`<span class="badge exc">ALTITUDE-EXCEPTION</span>`);
@@ -427,6 +429,7 @@ function placeCard(p){
     links.push(`<a class="waze" href="${waze(p.address)}" target="_blank">\ud83d\ude97 Waze</a>`);
   }
   return `<div class="card" data-rain="${!!p.rain}" data-exc="${!!p.exception}">
+    ${imgHtml}
     <div class="body">
       ${nameHtml}
       <div class="meta">${p.meta||""}${p.elev? ` \u00b7 <span class="elev-tag">${p.elev}</span>`:""}</div>
